@@ -1,0 +1,9 @@
+ConsoleRunner/bin/*
+ConsoleRunner/obj/*
+Mp3LibrarySorter/bin/*
+Mp3LibrarySorter/obj/*
+Mp3LibrarySorterTests/bin/*
+Mp3LibrarySorterTests/obj/*
+Output/*
+*.suo
+*.user
