@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -18,10 +19,13 @@ namespace Mp3LibrarySorter
     public interface IMp3FileReader
     {
         IList<IMp3Representation> RetrieveTagsFromMp3Files(IList<string> mp3Files);
+        IList<string> FilesWithNoTags { get;}
     }
 
     public class Mp3FileReader : IMp3FileReader
     {
+        private readonly IList<string> _filesWithMissingTags = new List<string>(); 
+
         public IList<IMp3Representation> RetrieveTagsFromMp3Files(IList<string> mp3Files)
         {
             var result = new List<IMp3Representation>();
@@ -58,10 +62,19 @@ namespace Mp3LibrarySorter
                             //string Comment = Encoding.Default.GetString(tag.Comment);
                             //string Genre = Encoding.Default.GetString(tag.Genre);
                         }
+                        else
+                        {
+                            _filesWithMissingTags.Add(file);
+                        }
                     }
                 }
             }
             return result;
+        }
+
+        public IList<string> FilesWithNoTags
+        {
+            get { return _filesWithMissingTags; }
         }
     }
 

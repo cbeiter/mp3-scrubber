@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Mp3LibrarySorter;
 
 namespace ConsoleRunner
@@ -11,6 +8,8 @@ namespace ConsoleRunner
     {
         static void Main(string[] args)
         {
+            var a = new Mp3LibrarySorter.Mp3LibrarySorter(new FileSystem(), @"C:\Development\Mp3LibrarySorter\Data", new Mp3TagsHierarchy(), new Mp3FileReader() );
+            a.CreateFoldersForArtists();
         }
     }
 

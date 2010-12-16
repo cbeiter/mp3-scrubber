@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mp3FileReaderFixture.cs" />
     <Compile Include="Mp3LibrarySorterFixture.cs" />
     <Compile Include="Mp3TagsHierachyFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -55,6 +56,9 @@
       <Project>{5001D67A-9E16-4107-9334-0FBFF17CC038}</Project>
       <Name>Mp3LibrarySorter</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Augie March - No Such Place.mp3" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
