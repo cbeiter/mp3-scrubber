@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Mp3LibrarySorter
@@ -48,12 +48,12 @@ namespace Mp3LibrarySorter
 
                         if (theTAGID.Equals("TAG"))
                         {
-                            string Artist = Encoding.Default.GetString(tag.Artist);
-                            string Album = Encoding.Default.GetString(tag.Album);
+                            var artist = truncate(Encoding.Default.GetChars(tag.Artist));
+                            var album = truncate(Encoding.Default.GetChars(tag.Album));
                             var mp3Representation = new Mp3Representation()
                             {
-                                AlbumName = Album,
-                                ArtistName = Artist,
+                                AlbumName = album,
+                                ArtistName = artist,
                                 FileName = file
                             };
                             result.Add(mp3Representation);
@@ -70,6 +70,17 @@ namespace Mp3LibrarySorter
                 }
             }
             return result;
+        }
+
+        private string truncate(char[] artist)
+        {
+            var builder = new StringBuilder();
+            foreach (char c in artist)
+            {
+                if ((c != '\0') && (c != ':') && (c != ';') && (c != '.') && (c != '?') && (c != '!') && (c != '"') && (c != '\\') && (c != '/') && (c != '*'))
+                    builder.Append(c);
+            }
+            return builder.ToString();
         }
 
         public IList<string> FilesWithNoTags

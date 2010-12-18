@@ -16,6 +16,7 @@ namespace Mp3LibrarySorterTests
         private IMp3Representation _mockMp3Representation;
         private IMp3TagsHierarchy _mockMp3TagHierarchy;
         private IMp3FileReader _mockMp3FileReader;
+        private readonly string _albumFolder = SomeStartDirectory + Path.DirectorySeparatorChar + SomeArtistName + Path.DirectorySeparatorChar + SomeAlbumName;
         const string SomeFileName = "SomeFileName";
         const string SomeAlbumName = "SomeAlbumName";
         const string SomeArtistName = "SomeArtistName";
@@ -36,6 +37,9 @@ namespace Mp3LibrarySorterTests
             _mockMp3TagHierarchy.Stub(tagsHierarchy => tagsHierarchy.GetAlbumsForArtist(SomeArtistName)).Return(
                 new List<string> {SomeAlbumName});
 
+            _mockMp3TagHierarchy.Stub(
+                mp3TagsHierarchy => mp3TagsHierarchy.GetSongsForAlbumOfArtist(SomeAlbumName, SomeArtistName)).Return(
+                    new List<string> {SomeFileName});
             _mockMp3FileReader = MockRepository.GenerateStub<IMp3FileReader>();
             _mockMp3FileReader.Stub(reader => reader.RetrieveTagsFromMp3Files(new List<string> {SomeFileName})).Return(
                 new List<IMp3Representation>
@@ -63,10 +67,13 @@ namespace Mp3LibrarySorterTests
         [Test]
         public void ShouldCreateDirectorySomeAlbumName()
         {
-            _mockFileSystem.AssertWasCalled(system => system.CreateDirectory(SomeStartDirectory + Path.DirectorySeparatorChar + SomeArtistName + Path.DirectorySeparatorChar + SomeAlbumName));
+            _mockFileSystem.AssertWasCalled(system => system.CreateDirectory(_albumFolder));
         }
 
+        [Test]
+        public void ShouldMoveValidMp3FilesToAlbumFolder()
+        {
+            _mockFileSystem.AssertWasCalled(system => system.Move(SomeFileName, _albumFolder + Path.DirectorySeparatorChar + SomeFileName));
+        }
     }
-
-
 }

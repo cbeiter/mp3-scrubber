@@ -8,7 +8,7 @@ namespace ConsoleRunner
     {
         static void Main(string[] args)
         {
-            var a = new Mp3LibrarySorter.Mp3LibrarySorter(new FileSystem(), @"C:\Development\Mp3LibrarySorter\Data", new Mp3TagsHierarchy(), new Mp3FileReader() );
+            var a = new Mp3LibrarySorter.Mp3LibrarySorter(new FileSystem(), @"L:\Music", new Mp3TagsHierarchy(), new Mp3FileReader());
             a.CreateFoldersForArtists();
         }
     }
@@ -22,7 +22,12 @@ namespace ConsoleRunner
 
         public List<string> GetAllMp3Files(string someStartDirectory)
         {
-            return new List<string>(Directory.GetFiles(someStartDirectory, "*.mp3", SearchOption.AllDirectories));
+            return new List<string>(Directory.GetFiles(someStartDirectory, "*.mp3", SearchOption.TopDirectoryOnly));
+        }
+
+        public void Move(string source, string destination)
+        {
+            File.Move(source, destination);
         }
     }
 }

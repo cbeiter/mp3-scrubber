@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Mp3LibrarySorter
 {
@@ -29,14 +28,20 @@ namespace Mp3LibrarySorter
 
         public void CreateFoldersForArtists()
         {
-            foreach (var artistFolder in _mp3TagsHierarchy.Artists)
+            foreach (var artist in _mp3TagsHierarchy.Artists)
             {
-                string artistDirectoryName = _startDirectory + Path.DirectorySeparatorChar + artistFolder;
+                string artistDirectoryName = _startDirectory + Path.DirectorySeparatorChar + artist;
                 _fileSystem.CreateDirectory(artistDirectoryName);
-                foreach (var albumName in _mp3TagsHierarchy.GetAlbumsForArtist(artistFolder))
+                foreach (var album in _mp3TagsHierarchy.GetAlbumsForArtist(artist))
                 {
-                    var currentFolder = artistDirectoryName + Path.DirectorySeparatorChar + albumName;
-                    _fileSystem.CreateDirectory(currentFolder);
+                    var albumFolder = artistDirectoryName + Path.DirectorySeparatorChar + album;
+                    _fileSystem.CreateDirectory(albumFolder);
+                    var files = _mp3TagsHierarchy.GetSongsForAlbumOfArtist(album, artist);
+                    foreach (var file in files)
+                    {
+                        var fileNameWithoutFullPath = Path.GetFileName(file);
+                        _fileSystem.Move(file, albumFolder + Path.DirectorySeparatorChar + fileNameWithoutFullPath);
+                    }
                 }
             }
         }
