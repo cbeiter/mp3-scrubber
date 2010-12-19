@@ -45,6 +45,12 @@
     <Compile Include="IMp3Representation.cs" />
     <Compile Include="IMp3TagsHierarchy.cs" />
     <Compile Include="Mp3LibrarySorter.cs" />
+    <Compile Include="mp3Stuff\BitReader.cs" />
+    <Compile Include="mp3Stuff\ID3v1.cs" />
+    <Compile Include="mp3Stuff\ID3v2.cs" />
+    <Compile Include="mp3Stuff\id3v2Frame.cs" />
+    <Compile Include="mp3Stuff\mp3info.cs" />
+    <Compile Include="mp3Stuff\MPEG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
