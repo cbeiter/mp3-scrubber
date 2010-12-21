@@ -103,7 +103,7 @@ namespace Mp3LibrarySorter.mp3Stuff
 				HasTag = false;
 				return;
 			}
-		    this.HasTag = true;
+		    HasTag = true;
 
 		    // read id3 version.  2 bytes:
 		    // The first byte of ID3v2 version is it's major version,
@@ -232,18 +232,14 @@ namespace Mp3LibrarySorter.mp3Stuff
 		    using (var fs = new FileStream(Filename, FileMode.Open, FileAccess.Read))
 		    {
 		        _br = new BinaryReader (fs);
-
 		        ReadHeader();
-
 		        if (HasTag)
 		        {
 		            if (FB_ExtendedHeader)
 		            {
 		                ReadExtendedHeader();
 		            }
-
 		            ReadFrames();
-		
 		            if (FD_Footer)
 		            {
 		                ReadFooter();
@@ -252,7 +248,6 @@ namespace Mp3LibrarySorter.mp3Stuff
 		        }
 		    }
 		    _br.Close();
-
 			#region tag reader
 
 			/*if (!fileOpen)
