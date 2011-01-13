@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using Raize.CodeSiteLogging;
+using File = TagLib.File;
 
 namespace Mp3LibrarySorter
 {
@@ -11,52 +13,77 @@ namespace Mp3LibrarySorter
         public IList<IMp3Representation> RetrieveTagsFromMp3Files(IList<string> mp3Files)
         {
             var result = new List<IMp3Representation>();
-            foreach (var file in mp3Files)
+            var count = 0;
+            foreach (var mp3File in mp3Files)
             {
-                using (var fs = File.OpenRead(file))
+                string extension = Path.GetExtension(mp3File);
+                if ((extension != ".cue") && (extension != ".db"))
+                try
                 {
-                    var br = new BinaryReader(fs);
-                    if (fs.Length >= 128)
+                    CodeSite.Send("Processing file " + count++ + " from " + mp3Files.Count);
+                    File tagLibFile = null;
+                    try
                     {
-                        var tag = new MusicID3Tag();
-                        fs.Seek(-128, SeekOrigin.End);
-                        fs.Read(tag.TAGID, 0, tag.TAGID.Length);
-                        fs.Read(tag.Title, 0, tag.Title.Length);
-                        fs.Read(tag.Artist, 0, tag.Artist.Length);
-                        fs.Read(tag.Album, 0, tag.Album.Length);
-                        fs.Read(tag.Year, 0, tag.Year.Length);
-                        fs.Read(tag.Comment, 0, tag.Comment.Length);
-                        fs.Read(tag.Genre, 0, tag.Genre.Length);
-                        var theTAGID = Encoding.Default.GetString(tag.TAGID);
+                        tagLibFile = File.Create(mp3File);
+                        _filesWithMissingTags.Add(mp3File);
+                    }
+                    catch (Exception exception)
+                    {
+                        CodeSite.Send(mp3File);
+                        CodeSite.SendException(exception);
+                        tagLibFile = null;
+                    }
+                    if (tagLibFile != null)
+                    {
+                        string artist = "";
+                        if (tagLibFile.Tag.AlbumArtists.Length > 0)
+                            artist = tagLibFile.Tag.AlbumArtists[0];
+                        else if (tagLibFile.Tag.Artists.Length > 0)
+                            artist = tagLibFile.Tag.Artists[0];
 
-                        if (theTAGID.Equals("TAG"))
+                        string album = "unknown";
+                        if ((tagLibFile.Tag != null) && (tagLibFile.Tag.Album != null))
                         {
-                            var artist = Encoding.Default.GetString(tag.Artist).Trim();
-                            var album = Encoding.Default.GetString(tag.Album).Trim(new[]{'\0', ':', ';', '.', '?', '!', '"', '*', '/', '\\'});
-                            var mp3Representation = new Mp3Representation()
-                                                        {
-                                                            AlbumName = album,
-                                                            ArtistName = artist,
-                                                            FileName = file
-                                                        };
-                            result.Add(mp3Representation);
-
-                            //string Year = Encoding.Default.GetString(tag.Year);
-                            //string Comment = Encoding.Default.GetString(tag.Comment);
-                            //string Genre = Encoding.Default.GetString(tag.Genre);
-                        }
-                        else if (theTAGID.Equals("ID3"))
-                        {
-                            var b = true; 
-                        }
-                        else
-                        {
-                            _filesWithMissingTags.Add(file);
+                            if (tagLibFile.Tag.Album.Length > 0)
+                                album = tagLibFile.Tag.Album;
+                            else if (tagLibFile.Tag.AlbumArtists.Length > 0)
+                                album = tagLibFile.Tag.AlbumArtists[0];
+                            if (artist != string.Empty)
+                            {
+                                var mp3Representation1 = new Mp3Representation()
+                                                             {
+                                                                 AlbumName = album,
+                                                                 ArtistName = artist,
+                                                                 FileName = mp3File
+                                                             };
+                                result.Add(mp3Representation1);
+                            }
+                        } else {
+                            _filesWithMissingTags.Add(mp3File);
                         }
                     }
+                    else {
+                        _filesWithMissingTags.Add(mp3File);
+                    }
+                } catch (Exception ex) {
+                    CodeSite.Send(mp3File);
+                    CodeSite.SendException(ex);
+                    _filesWithMissingTags.Add(mp3File);
                 }
+               
             }
             return result;
+        }
+
+        public string GetArtistFromTagFile(TagLib.File mp3File)
+        {
+            string artist = "";
+            if (mp3File.Tag.AlbumArtists.Length > 0)
+                artist = mp3File.Tag.AlbumArtists[0];
+            else if (mp3File.Tag.Artists.Length > 0)
+                artist = mp3File.Tag.Artists[0];
+
+            return artist;
         }
 
         public IList<string> FilesWithNoTags
