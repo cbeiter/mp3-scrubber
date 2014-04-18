@@ -1,0 +1,3 @@
+Mp3LibrarySorter is designed to read in MP3 files from a folder, and copies them
+to a new directory with file folder and MP3 file names modified to match
+artist data encoded on the files.
